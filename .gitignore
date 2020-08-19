@@ -10,6 +10,9 @@
 *.userosscache
 *.sln.docstates
 
+out/
+Temperature.Converter.API/out
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
