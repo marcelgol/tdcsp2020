@@ -28,19 +28,23 @@ stages:
         vmImage: $(vmImageName)
       steps:
         - task: DotNetCoreCLI@2
+          displayName: Nuget Restore
           inputs:
             command: 'restore'
             projects: '.'
             feedsToUse: 'select'
         - task: DotNetCoreCLI@2
+          displayName: Build
           inputs:
             command: 'build'
             projects: '.'
         - task: DotNetCoreCLI@2
+          displayName: Publish
           inputs:
             command: 'publish'
-            publishWebProjects: true
+            publishWebProjects: false
             arguments: '-o ./out'
+            zipAfterPublish: false
             workingDirectory: './Temperature.Converter.API'
 
 
