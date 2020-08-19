@@ -46,11 +46,7 @@ stages:
             arguments: '-o ./out'
             zipAfterPublish: false
             workingDirectory: './Temperature.Converter.API'
-
-
-  - stage: Build
-    displayName: Build and push stage
-    jobs:  
+    
     - job: Build
       displayName: Build
       pool:
