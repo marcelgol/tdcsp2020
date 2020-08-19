@@ -1,0 +1,74 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+
+- task: SonarCloudPrepare@1
+  displayName: 'Sonar Scan Prep'
+  inputs:
+    SonarCloud: 'SonarCloud'
+    organization: 'marcelgol'
+    scannerMode: 'MSBuild'
+    projectKey: 'Temperature.Converter'
+    projectName: 'Temperature.Converter'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore Packages'
+  inputs:
+    command: 'restore'
+    projects: '**/*.sln'
+    feedsToUse: 'select'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Unit Tests'
+  inputs:
+    command: 'test'
+    projects: '**/Temperature.Converter.Tests'
+
+- task: SonarCloudAnalyze@1
+  displayName: Running Sonar Scan
+
+- task: SonarCloudPublish@1
+  displayName: Publishing Sonar Results
+  inputs:
+    pollingTimeoutSec: '300'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: true
+    arguments: '-o $(build.artifactstagingdirectory)/out'
+    zipAfterPublish: false
+    modifyOutputPath: false
+
+- task: Docker@2
+  inputs:
+    containerRegistry: 'marcelgol.azurecr.io'
+    repository: 'temparature-converter'
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    buildContext: '$(build.artifactstagingdirectory)'
+    
+- task: AzureWebAppContainer@1
+  inputs:
+    azureSubscription: 'Visual Studio Professional(94211381-cbc5-4473-b790-de89414c0bfc)'
+    appName: 'cleokuhn-temp-converter'
+    containers: 'marcelgol.azurecr.io/temparature-converter:$(Build.BuildId)'
+
+
+
