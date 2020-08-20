@@ -9,7 +9,7 @@ namespace Calculator.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class HealthCheck1Controller : ControllerBase
+    public class HealthCheck2Controller : ControllerBase
     {
 
         // POST: api/FahrenheitToCelsius
