@@ -39,6 +39,10 @@ stages:
             command: 'build'
             projects: '.'
         - task: DotNetCoreCLI@2
+          inputs:
+            command: 'test'
+            projects: './Temperature.Converter.Tests'
+        - task: DotNetCoreCLI@2
           displayName: Publish
           inputs:
             command: 'publish'
